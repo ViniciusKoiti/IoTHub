@@ -1,0 +1,5 @@
+:root {
+    --color-text-default: #fff;
+    --background-default: #1e1e2f;
+    --attention-color: linear-gradient(180deg, #d92e91 0%, #be32ad 100%);
+}
