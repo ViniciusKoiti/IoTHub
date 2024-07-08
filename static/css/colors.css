@@ -2,4 +2,9 @@
     --color-text-default: #fff;
     --background-default: #1e1e2f;
     --attention-color: linear-gradient(180deg, #d92e91 0%, #be32ad 100%);
+    --nav-bar: #231D2E;
+    --card-header: #281D2E;
+    --card-footer: #281D2E;
+    --card-color: #231D2E;
+
 }
