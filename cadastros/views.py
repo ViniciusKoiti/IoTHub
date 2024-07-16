@@ -1,6 +1,10 @@
 from django.shortcuts import render
 
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, CreateView
+
+from .models import Cidade
+
+# from DjangoMQTT.cadastros.models import Cidade, Pessoa
 
 # Create your views here.
 class IndexView(TemplateView):
@@ -8,5 +12,11 @@ class IndexView(TemplateView):
 
 class SobreView(TemplateView):
     template_name = "cadastros/sobre.html"
+
+class CidadeCreate(CreateView):
+    template_name = "cadastros/formularios.html"
+    model = Cidade
+    fields = ['nome', 'estado']
+    
     
 

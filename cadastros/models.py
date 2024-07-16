@@ -37,14 +37,36 @@ class Usuario(Auditoria):
 
 class Dispositivos(Auditoria):
     descricao = models.CharField(max_length=30)
+    data_instalacao = models.DateField(null=True, blank=True)
+    ultima_manutencao = models.DateField(null=True, blank=True)
     
 class Reles(Dispositivos):
     estaLigado = models.BooleanField()
+    
  
 
-class Reles(Dispositivos):
-    estaLigado = models.BooleanField()
-    
+class Sensor(Dispositivos):
+    TIPO_SENSOR = (
+        ("TEMPERATURA", "Temperatura"),
+        ("UMIDADE", "Umidade"),
+        ("PRESSAO", "Pressão"),
+    )
+    tipo = models.CharField(max_length=20, choices=TIPO_SENSOR)
+
+class Leitura(Auditoria):
+    TIPO_LEITURA = (
+        ("TEMPERATURA", "Temperatura"),
+        ("UMIDADE", "Umidade"),
+        ("PRESSAO", "Pressão"),
+        # Adicione outros tipos de leitura conforme necessário
+    )
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+    tipo_leitura = models.CharField(max_length=20, choices=TIPO_LEITURA)
+    valor = models.CharField(max_length=50)  # Valor armazenado como string para flexibilidade
+
+    def __str__(self):
+        return f"{self.sensor.descricao} - {self.tipo_leitura}: {self.valor}"
+
 class Conexao(Auditoria):
     TIPO_CONEXAO = (
         ("MQTT", "MQTT"),
@@ -64,14 +86,16 @@ class Microcontrolador(Auditoria):
         ("ARDUINO", "Arduino"), 
     )
     descricao = models.CharField(max_length=30)
+    atual_codigo = models.TextField()
     tipo_microcontrolador = models.CharField(max_length=20,
                                     choices=TIPO_CONTROLADOR,
                                     default="ARDUINO")
     conexao = models.ForeignKey(Conexao, on_delete=models.CASCADE)
+
     
     
 
-class Acessos(models.Model):
+class Acessos(Auditoria):
     NIVEIS_ACESSO = (
         ("TOTAL", "Total"), 
         ("VISUALIZAR", "Visualizar"),
