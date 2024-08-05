@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, UpdateView, ListView, DeleteView
 
-from .models import Cidade, Pessoa
+from .models import Cidade, Pessoa, Reles, Sensor
 
 # from DjangoMQTT.cadastros.models import Cidade, Pessoa
 
@@ -72,6 +72,7 @@ class PessoaListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Lista de Pessoas'
+        context['model'] = 'Pessoas'
         context['create_url'] = 'pessoa-create'
         context['update_url'] = 'pessoa-update'
         context['delete_url'] = 'pessoa-delete'
@@ -86,6 +87,7 @@ class PessoaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Adicionar Pessoa'
+        context['model'] = 'Pessoa'
         return context
 
 class PessoaUpdateView(UpdateView):
@@ -109,4 +111,98 @@ class PessoaDeleteView(DeleteView):
         context['titulo'] = 'Deletar Pessoa'
         return context
     
+ #Sensores Listas View   
     
+class RelesListView(ListView):
+    model = Reles
+    template_name = 'listas/reles.html'
+    context_object_name = 'objects'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Lista de Reles'
+        context['model'] = 'Reles'
+        context['create_url'] = 'reles-create'
+        context['update_url'] = 'reles-update'
+        context['delete_url'] = 'reles-delete'
+        return context
+
+class RelesCreateView(CreateView):
+    model = Reles
+    fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
+    template_name = 'cadastros/formularios.html'
+    success_url = reverse_lazy('reles-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Adicionar Reles'
+        return context
+
+class RelesUpdateView(UpdateView):
+    model = Reles
+    fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
+    template_name = 'cadastros/formularios.html'
+    success_url = reverse_lazy('reles-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Reles'
+        return context
+
+class RelesDeleteView(DeleteView):
+    model = Reles
+    template_name = 'cadastro/base_confirm_delete.html'
+    success_url = reverse_lazy('reles-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Deletar Reles'
+        return context    
+    
+# Reles testes
+
+class SensorListView(ListView):
+    model = Sensor
+    template_name = 'listas/sensor.html'
+    context_object_name = 'objects'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Lista de Sensores'
+        context['model'] = 'Sensor'
+        context['create_url'] = 'sensor-create'
+        context['update_url'] = 'sensor-update'
+        context['delete_url'] = 'sensor-delete'
+        return context
+
+class SensorCreateView(CreateView):
+    model = Sensor
+    fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
+    template_name = 'cadastros/formularios.html'
+    success_url = reverse_lazy('sensor-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Adicionar Sensor'
+        return context
+
+class SensorUpdateView(UpdateView):
+    model = Sensor
+    fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
+    template_name = 'cadastros/formularios.html'
+    success_url = reverse_lazy('sensor-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Sensor'
+        return context
+
+class SensorDeleteView(DeleteView):
+    model = Sensor
+    template_name = 'cadastro/base_confirm_delete.html'
+    success_url = reverse_lazy('sensor-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Deletar Sensor'
+        return context    

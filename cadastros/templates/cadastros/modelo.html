@@ -45,7 +45,7 @@
                             <a class="nav-link active text-light" aria-current="page" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="#">Sobre</a>
+                            <a class="nav-link text-light" href="{% url 'sobre'  %}">Sobre</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-light" href="#" role="button"
@@ -53,12 +53,12 @@
                                 Dropdown
                             </a>
                             <ul class="dropdown-menu dropdown-menu-background">
-                                <li><a class="dropdown-item text-light" href="#">Action</a></li>
-                                <li><a class="dropdown-item text-light" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item text-light" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'cidade-list'  %}">Cidade</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'pessoa-list'  %}">Usuario</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'sensor-list'  %}">Sensores</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'reles-list' %}">Reles</a></li>
+                               
+                               
                             </ul>
                         </li>
                     </ul>

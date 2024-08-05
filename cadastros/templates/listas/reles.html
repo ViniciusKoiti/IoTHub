@@ -2,7 +2,7 @@
 
 {% block conteudo %}
 <h3>
-    Lista de <b>{{ modal }}</b>
+    Lista de <b>{{ titulo }}</b>
 </h3>
 
 <hr>
@@ -15,20 +15,20 @@
 <table class="table table-striped">
     <thead class="text-light">
         <tr>
-            <th>Primeiro Nome</th>
-            <th>Sobrenome</th>
-            <th>CPF</th>
-            <th>Email</th>
+            <th>Descrição</th>
+            <th>Data de Instalação</th>
+            <th>Última Manutenção</th>
+            <th>Tipo</th>
             <th>Opções</th>
         </tr>
     </thead>
     <tbody>
         {% for object in objects %}
             <tr class="text-light">
-                <td>{{ object.primeiro_nome }}</td>
-                <td>{{ object.sobrenome }}</td>
-                <td>{{ object.cpf }}</td>
-                <td>{{ object.email }}</td>
+                <td>{{ object.descricao }}</td>
+                <td>{{ object.data_instalacao }}</td>
+                <td>{{ object.ultima_manutencao }}</td>
+                <td>{{ object.get_tipo_display }}</td>
                 <td>
                     <div class="d-flex justify-content-evenly">
                         <a class="text-light" href="{% url update_url object.pk %}">
