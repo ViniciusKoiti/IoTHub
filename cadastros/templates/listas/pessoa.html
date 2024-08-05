@@ -1,0 +1,50 @@
+{% extends "cadastros/modelo.html" %}
+
+{% block conteudo %}
+<h3>
+    Lista de <b>{{ titulo }}</b>
+</h3>
+
+<hr>
+<div>
+    <a href="{% url create_url %}" class="btn btn-light">
+        Adicionar {{ titulo }}
+    </a>
+</div>
+
+<table class="table table-striped">
+    <thead class="text-light">
+        <tr>
+            <th>Primeiro Nome</th>
+            <th>Sobrenome</th>
+            <th>CPF</th>
+            <th>Email</th>
+            <th>Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in objects %}
+            <tr class="text-light">
+                <td>{{ object.primeiro_nome }}</td>
+                <td>{{ object.sobrenome }}</td>
+                <td>{{ object.cpf }}</td>
+                <td>{{ object.email }}</td>
+                <td>
+                    <div class="d-flex justify-content-evenly">
+                        <a class="text-light" href="{% url update_url object.pk %}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a class="text-light" href="{% url delete_url object.pk %}">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% empty %}
+            <tr class="text-light">
+                <td colspan="5">Nenhum registro encontrado.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

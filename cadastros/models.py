@@ -42,8 +42,6 @@ class Dispositivos(Auditoria):
     
 class Reles(Dispositivos):
     estaLigado = models.BooleanField()
-    
- 
 
 class Sensor(Dispositivos):
     TIPO_SENSOR = (
@@ -91,10 +89,7 @@ class Microcontrolador(Auditoria):
                                     choices=TIPO_CONTROLADOR,
                                     default="ARDUINO")
     conexao = models.ForeignKey(Conexao, on_delete=models.CASCADE)
-
     
-    
-
 class Acessos(Auditoria):
     NIVEIS_ACESSO = (
         ("TOTAL", "Total"), 
@@ -107,4 +102,4 @@ class Acessos(Auditoria):
                                     choices=NIVEIS_ACESSO,
                                     default="Total")
     
-    
+    0
