@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cadastros.apps.CadastrosConfig',
+    'usuarios.apps.UsuariosConfig',
     'crispy_forms',
     'crispy_bootstrap5',
 ]

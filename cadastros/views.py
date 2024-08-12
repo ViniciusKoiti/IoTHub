@@ -32,6 +32,7 @@ class CidadeListView(ListView):
 class CidadeCreate(CreateView):
     template_name = "cadastros/formularios.html"
     model = Cidade
+    success_url = reverse_lazy('cidade-list')
     fields = ['nome', 'estado']
 
     def get_context_data(self, **kwargs):

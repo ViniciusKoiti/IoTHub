@@ -26,13 +26,13 @@ urlpatterns = [
 
     path('sensores/', SensorListView.as_view(), name='sensor-list'),
     path('sensores/create/', SensorCreateView.as_view(), name='sensor-create'),
-    path('sensores/update/<int:pk>/', SensorUpdateView.as_view(), name='editar-sensor'),
-    path('sensores/delete/<int:pk>/', SensorDeleteView.as_view(), name='excluir-sensor'),
+    path('sensores/update/<int:pk>/', SensorUpdateView.as_view(), name='sensor-update'),
+    path('sensores/delete/<int:pk>/', SensorDeleteView.as_view(), name='sensor-delete'),
 
-    path('sensores/', RelesListView.as_view(), name='reles-list'),
-    path('sensores/create/', RelesCreateView.as_view(), name='reles-create'),
-    path('sensores/update/<int:pk>/', RelesUpdateView.as_view(), name='reles-sensor'),
-    path('sensores/delete/<int:pk>/', RelesDeleteView.as_view(), name='reles-sensor'),
+    path('reles/', RelesListView.as_view(), name='reles-list'),
+    path('reles/create/', RelesCreateView.as_view(), name='reles-create'),
+    path('reles/update/<int:pk>/', RelesUpdateView.as_view(), name='reles-update'),
+    path('reles/delete/<int:pk>/', RelesDeleteView.as_view(), name='reles-delete'),
 
 
 ]
