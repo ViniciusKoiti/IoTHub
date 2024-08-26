@@ -2,6 +2,8 @@ from django.shortcuts import render
 
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, UpdateView, ListView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from braces.views import GroupRequiredMixin
 
 from .models import Cidade, Pessoa, Reles, Sensor
 
@@ -15,7 +17,7 @@ class SobreView(TemplateView):
     template_name = "cadastros/sobre.html"
 
 
-class CidadeListView(ListView):
+class CidadeListView(LoginRequiredMixin,ListView):
     model = Cidade
     template_name = 'listas/cidade.html'
     context_object_name = 'objects'
@@ -29,7 +31,7 @@ class CidadeListView(ListView):
         context['delete_url'] = 'cidade-delete'
         return context
     
-class CidadeCreate(CreateView):
+class CidadeCreate(LoginRequiredMixin,CreateView):
     template_name = "cadastros/formularios.html"
     model = Cidade
     success_url = reverse_lazy('cidade-list')
@@ -40,7 +42,7 @@ class CidadeCreate(CreateView):
         context['titulo'] = 'Adicionar Cidade'
         return context
     
-class CidadeUpdateView(UpdateView):
+class CidadeUpdateView(LoginRequiredMixin,UpdateView):
     model = Cidade
     fields = ['nome', 'estado']
     template_name = 'cadastros/formularios.html'
@@ -51,10 +53,11 @@ class CidadeUpdateView(UpdateView):
         context['titulo'] = 'Editar Cidade'
         return context
 
-class CidadeDeleteView(DeleteView):
+class CidadeDeleteView(GroupRequiredMixin,DeleteView):
     model = Cidade
     template_name = 'cadastros/base_confirm_delete.html'
     success_url = reverse_lazy('cidade-list')
+    group_required = ["Administrador"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,7 +68,7 @@ class CidadeDeleteView(DeleteView):
 # Pessoa List
 
 
-class PessoaListView(ListView):
+class PessoaListView(LoginRequiredMixin,ListView):
     model = Pessoa
     template_name = 'listas/pessoa.html'
     context_object_name = 'objects'
@@ -79,7 +82,7 @@ class PessoaListView(ListView):
         context['delete_url'] = 'pessoa-delete'
         return context
     
-class PessoaCreateView(CreateView):
+class PessoaCreateView(LoginRequiredMixin,CreateView):
     model = Pessoa
     fields = ['primeiro_nome', 'sobrenome', 'cpf', 'email']
     template_name = 'cadastros/formularios.html'
@@ -91,7 +94,7 @@ class PessoaCreateView(CreateView):
         context['model'] = 'Pessoa'
         return context
 
-class PessoaUpdateView(UpdateView):
+class PessoaUpdateView(LoginRequiredMixin,UpdateView):
     model = Pessoa
     fields = ['primeiro_nome', 'sobrenome', 'cpf', 'email']
     template_name = 'cadastros/formularios.html'
@@ -102,7 +105,7 @@ class PessoaUpdateView(UpdateView):
         context['titulo'] = 'Editar Pessoa'
         return context
 
-class PessoaDeleteView(DeleteView):
+class PessoaDeleteView(LoginRequiredMixin,DeleteView):
     model = Pessoa
     template_name = 'cadastros/base_confirm_delete.html'
     success_url = reverse_lazy('pessoa-list')
@@ -114,7 +117,7 @@ class PessoaDeleteView(DeleteView):
     
  #Sensores Listas View   
     
-class RelesListView(ListView):
+class RelesListView(LoginRequiredMixin,ListView):
     model = Reles
     template_name = 'listas/reles.html'
     context_object_name = 'objects'
@@ -128,7 +131,7 @@ class RelesListView(ListView):
         context['delete_url'] = 'reles-delete'
         return context
 
-class RelesCreateView(CreateView):
+class RelesCreateView(LoginRequiredMixin,CreateView):
     model = Reles
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
     template_name = 'cadastros/formularios.html'
@@ -139,7 +142,7 @@ class RelesCreateView(CreateView):
         context['titulo'] = 'Adicionar Reles'
         return context
 
-class RelesUpdateView(UpdateView):
+class RelesUpdateView(LoginRequiredMixin,UpdateView):
     model = Reles
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
     template_name = 'cadastros/formularios.html'
@@ -150,10 +153,11 @@ class RelesUpdateView(UpdateView):
         context['titulo'] = 'Editar Reles'
         return context
 
-class RelesDeleteView(DeleteView):
+class RelesDeleteView(GroupRequiredMixin,DeleteView):
     model = Reles
     template_name = 'cadastro/base_confirm_delete.html'
     success_url = reverse_lazy('reles-list')
+    group_required = ["Administrador"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,7 +166,7 @@ class RelesDeleteView(DeleteView):
     
 # Reles testes
 
-class SensorListView(ListView):
+class SensorListView(LoginRequiredMixin,ListView):
     model = Sensor
     template_name = 'listas/sensor.html'
     context_object_name = 'objects'
@@ -176,7 +180,7 @@ class SensorListView(ListView):
         context['delete_url'] = 'sensor-delete'
         return context
 
-class SensorCreateView(CreateView):
+class SensorCreateView(LoginRequiredMixin,CreateView):
     model = Sensor
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
     template_name = 'cadastros/formularios.html'
@@ -187,7 +191,7 @@ class SensorCreateView(CreateView):
         context['titulo'] = 'Adicionar Sensor'
         return context
 
-class SensorUpdateView(UpdateView):
+class SensorUpdateView(LoginRequiredMixin,UpdateView):
     model = Sensor
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
     template_name = 'cadastros/formularios.html'
@@ -198,7 +202,7 @@ class SensorUpdateView(UpdateView):
         context['titulo'] = 'Editar Sensor'
         return context
 
-class SensorDeleteView(DeleteView):
+class SensorDeleteView(GroupRequiredMixin,DeleteView):
     model = Sensor
     template_name = 'cadastro/base_confirm_delete.html'
     success_url = reverse_lazy('sensor-list')
