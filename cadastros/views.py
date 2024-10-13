@@ -1,17 +1,46 @@
 from django.shortcuts import render
-
+from django.utils import timezone
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, CreateView, UpdateView, ListView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from braces.views import GroupRequiredMixin
+from django.db.models import Count
 
-from .models import Cidade, Pessoa, Reles, Sensor
+from .models import (
+    Dispositivos, Sensor, Leitura, Microcontrolador, 
+    Acessos, Usuario,Cidade,Pessoa, Reles
+)
 
-# from DjangoMQTT.cadastros.models import Cidade, Pessoa
+class IndexView(LoginRequiredMixin,TemplateView):
+    template_name = "cadastros/modelo.html"  # Atualize para o template correto
+    login_url = 'login'  # URL para redirecionar se não estiver logado
+    redirect_field_name = 'redirect_to'  # Nome do campo de redirecionamento (opcional)
 
-# Create your views here.
-class IndexView(TemplateView):
-    template_name = "cadastros/modelo.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        try:
+            print(self.request.user)
+        
+            usuario = self.request.user.usuario.pessoa
+            context['usuario'] = usuario
+        except Usuario.DoesNotExist:
+            context['usuario'] = None  # ou algum valor padrão
+
+        context['ultimos_dispositivos'] = Dispositivos.objects.order_by('-data_criacao')[:5]
+
+        context['ultimas_leituras'] = Leitura.objects.select_related('sensor').order_by('-data_criacao')[:10]
+
+        context['resumo_sensores'] = Sensor.objects.values('tipo').annotate(total=Count('id'))
+
+        context['microcontroladores_acessos'] = Microcontrolador.objects.select_related('conexao').prefetch_related('acessos_set')[:5]
+
+        context['ultimos_acessos'] = Acessos.objects.select_related('usuario__pessoa', 'microcontrolador').order_by('-data_criacao')[:5]
+
+        context['ultima_atualizacao'] = timezone.now()
+
+        return context
+
 
 class SobreView(TemplateView):
     template_name = "cadastros/sobre.html"

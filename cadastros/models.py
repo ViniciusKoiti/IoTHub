@@ -31,6 +31,7 @@ class Pessoa(Auditoria):
 
 
 class Usuario(Auditoria):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='usuario')
     pessoa = models.OneToOneField(
         "Pessoa", verbose_name=("Pessoa"), on_delete=models.CASCADE)
 
@@ -102,4 +103,4 @@ class Acessos(Auditoria):
                                     choices=NIVEIS_ACESSO,
                                     default="Total")
     
-    0
+    

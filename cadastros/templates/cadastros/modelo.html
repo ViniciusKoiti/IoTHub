@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% block title %}
-        <title>Vinicius</title>
+    <title>Vinicius</title>
     {% endblock %}
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -25,9 +25,9 @@
         <div class="container-fluid">
             <a class="navbar-brand text-light" href="#">New Vini</a>
 
-            <div class="container-flex-end" onclick="alterarHamburgerMenu(this)" class="navbar-toggler"
-                type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <div class="container-flex-end" onclick="alterarHamburgerMenu(this)" class="navbar-toggler" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar"
+                aria-label="Toggle navigation">
                 <div class="bar1"></div>
                 <div class="bar2"></div>
                 <div class="bar3"></div>
@@ -48,13 +48,15 @@
                             <a class="nav-link text-light" href="{% url 'sobre'  %}">Sobre</a>
                         </li>
 
+
+
                         {% if request.user.is_authenticated %}
 
                         <form action="{% url 'logout'  %}" method="post" id="logout_sair">
                             {% csrf_token %}
-                        <li class="nav-item">
-                            <a class="nav-link text-light" onclick="sairLogin()">Sair</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" onclick="sairLogin()">Sair</a>
+                            </li>
                         </form>
 
                         <li class="nav-item dropdown">
@@ -62,51 +64,158 @@
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 Dropdown
                             </a>
-                        
+
                             <ul class="dropdown-menu dropdown-menu-background">
                                 <li><a class="dropdown-item text-light" href="{% url 'cidade-list'  %}">Cidade</a></li>
                                 <li><a class="dropdown-item text-light" href="{% url 'pessoa-list'  %}">Usuario</a></li>
-                                <li><a class="dropdown-item text-light" href="{% url 'sensor-list'  %}">Sensores</a></li>
+                                <li><a class="dropdown-item text-light" href="{% url 'sensor-list'  %}">Sensores</a>
+                                </li>
                                 <li><a class="dropdown-item text-light" href="{% url 'reles-list' %}">Reles</a></li>
-                               
-                               
+
+
                             </ul>
-                            
+
                         </li>
                         {% else %}
 
-                    
+
                         <li class="nav-item">
                             <a class="nav-link text-light" href="{% url 'login'  %}">Login</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="{% url 'registrar'  %}">Registre-se</a>
+                        </li>
                         {% endif %}
-                      
+
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
     {% endblock %}
-    
-    <div class="container">
 
-    
+    <div class="container p-5">
 
-    <div class="card text-center container p-5">
-        {% block conteudo %}
-        <div class="card-header">
+
+
+        <div class="card text-center container p-5">
+            {% block conteudo %}
+            {% if usuario %}
+            <div class="mb-4">
+                <h1 class="display-4">Bem-vindo, {{ usuario.primeiro_nome }}!</h1>
+                <p class="text-muted">Última atualização: {{ ultima_atualizacao|date:"d/m/Y H:i" }}</p>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <p>Você não está autenticado. Por favor, <a href="{% url 'login' %}">faça login</a> para ver o conteúdo.
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Resto do conteúdo da página -->
+
+            <section>
+                <h2>Últimos Dispositivos Instalados</h2>
+                <ul>
+                    {% for dispositivo in ultimos_dispositivos %}
+                    <li>{{ dispositivo.descricao }} - Instalado em {{ dispositivo.data_criacao|date:"d/m/Y" }}</li>
+                    {% empty %}
+                    <li>Nenhum dispositivo encontrado.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section>
+                <h2>Últimas Leituras de Sensores</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sensor</th>
+                            <th>Tipo de Leitura</th>
+                            <th>Valor</th>
+                            <th>Data da Leitura</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for leitura in ultimas_leituras %}
+                        <tr>
+                            <td>{{ leitura.sensor.descricao }} ({{ leitura.sensor.get_tipo_display }})</td>
+                            <td>{{ leitura.get_tipo_leitura_display }}</td>
+                            <td>{{ leitura.valor }}</td>
+                            <td>{{ leitura.data_criacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">Nenhuma leitura encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Resumo de Sensores por Tipo</h2>
+                <ul>
+                    {% for resumo in resumo_sensores %}
+                    <li>{{ resumo.tipo }}: {{ resumo.total }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section>
+                <h2>Microcontroladores e Acessos Recentes</h2>
+                <ul>
+                    {% for micro in microcontroladores_acessos %}
+                    <li>
+                        {{ micro.descricao }} ({{ micro.get_tipo_microcontrolador_display }}) - Conexão: {{
+                        micro.conexao.descricao }}
+                        <ul>
+                            {% for acesso in micro.acessos_set.all %}
+                            <li>{{ acesso.usuario.pessoa.primeiro_nome }} - Nível de Acesso: {{
+                                acesso.get_nivel_acesso_display }}</li>
+                            {% empty %}
+                            <li>Nenhum acesso encontrado.</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% empty %}
+                    <li>Nenhum microcontrolador encontrado.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section>
+                <h2>Últimos Acessos</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Microcontrolador</th>
+                            <th>Nível de Acesso</th>
+                            <th>Data do Acesso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for acesso in ultimos_acessos %}
+                        <tr>
+                            <td>{{ acesso.usuario.pessoa.primeiro_nome }}</td>
+                            <td>{{ acesso.microcontrolador.descricao }}</td>
+                            <td>{{ acesso.get_nivel_acesso_display }}</td>
+                            <td>{{ acesso.data_criacao|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">Nenhum acesso encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% endblock %}
         </div>
-        <div class="card-body">
-          <h5 class="card-title">Special title treatment</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        </div>
-        <div class="card-footer">
-          2 days ago
-        </div>
-        {% endblock %}
-      </div>
     </div>
-      
+
 </body>
 
 <script src="{%  static 'bootstrap/bootstrap/js/bootstrap.min.js'  %}"></script>
