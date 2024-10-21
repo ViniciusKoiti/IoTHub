@@ -3,12 +3,21 @@ from django.contrib.auth.models import User
 
 
 class Auditoria(models.Model):
+    criador = models.ForeignKey(
+        "Usuario", on_delete=models.SET_NULL, 
+        null=True, blank=True, 
+        related_name='%(class)s_criado_por'
+    )
+    atualizado_por = models.ForeignKey(
+        "Usuario", on_delete=models.SET_NULL, 
+        null=True, blank=True, 
+        related_name='%(class)s_atualizado_por'
+    )
     data_atualizacao = models.DateTimeField(auto_now=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
-# Create your models here.
 
 
 class Cidade(Auditoria):

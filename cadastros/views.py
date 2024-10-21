@@ -45,198 +45,157 @@ class IndexView(LoginRequiredMixin,TemplateView):
 class SobreView(TemplateView):
     template_name = "cadastros/sobre.html"
 
+class BaseListView(LoginRequiredMixin, ListView):
+    template_name = 'listas/base_list.html'  # Template padrão (pode ser sobrescrito)
+    context_object_name = 'objects'  # Nome padrão do contexto (pode ser sobrescrito)
 
-class CidadeListView(LoginRequiredMixin,ListView):
-    model = Cidade
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.titulo  # Título dinâmico vindo da classe específica
+        context['model'] = self.model_name  # Nome do modelo vindo da classe específica
+        context['create_url'] = self.create_url
+        context['update_url'] = self.update_url
+        context['delete_url'] = self.delete_url
+        return context
+
+class CidadeListView(BaseListView):
     template_name = 'listas/cidade.html'
-    context_object_name = 'objects'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Lista de Cidades'
-        context['model'] = 'Cidade'
-        context['create_url'] = 'cidade-create'
-        context['update_url'] = 'cidade-update'
-        context['delete_url'] = 'cidade-delete'
-        return context
-    
-class CidadeCreate(LoginRequiredMixin,CreateView):
-    template_name = "cadastros/formularios.html"
     model = Cidade
-    success_url = reverse_lazy('cidade-list')
-    fields = ['nome', 'estado']
+    titulo = 'Lista de Cidades'
+    model_name = 'Cidade'
+    create_url = 'cidade-create'
+    update_url = 'cidade-update'
+    delete_url = 'cidade-delete'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Adicionar Cidade'
-        return context
-    
-class CidadeUpdateView(LoginRequiredMixin,UpdateView):
-    model = Cidade
-    fields = ['nome', 'estado']
+class BaseCreateView(LoginRequiredMixin, CreateView):
     template_name = 'cadastros/formularios.html'
-    success_url = reverse_lazy('cidade-list')
+    success_url = reverse_lazy('home')  # Sobrescreva nas classes específicas
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Cidade'
+        context['titulo'] = self.titulo
         return context
+    
+    def form_valid(self, form):
+        usuario_logado = self.request.user.usuario  
+        form.instance.criador = usuario_logado
+        form.instance.atualizado_por = usuario_logado
+        return super().form_valid(form)
 
-class CidadeDeleteView(GroupRequiredMixin,DeleteView):
-    model = Cidade
+class BaseUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'cadastros/formularios.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.titulo
+        return context
+    
+class BaseDeleteView(GroupRequiredMixin, DeleteView):
     template_name = 'cadastros/base_confirm_delete.html'
-    success_url = reverse_lazy('cidade-list')
     group_required = ["Administrador"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Deletar Cidade'
+        context['titulo'] = self.titulo
         return context
+
+
+class CidadeCreate(BaseCreateView):
+    model = Cidade
+    fields = ['nome', 'estado']
+    titulo = 'Adicionar Cidade'
+    success_url = reverse_lazy('cidade-list')
+
+    
+class CidadeUpdateView(BaseUpdateView):
+    model = Cidade
+    fields = ['nome', 'estado']
+    titulo = 'Editar Cidade'
+    success_url = reverse_lazy('cidade-list')
+
+class CidadeDeleteView(BaseDeleteView):
+    model = Cidade
+    titulo = 'Deletar Cidade'
+    success_url = reverse_lazy('cidade-list')
     
 
 # Pessoa List
 
-
-class PessoaListView(LoginRequiredMixin,ListView):
-    model = Pessoa
+class PessoaListView(BaseListView):
     template_name = 'listas/pessoa.html'
-    context_object_name = 'objects'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Lista de Pessoas'
-        context['model'] = 'Pessoas'
-        context['create_url'] = 'pessoa-create'
-        context['update_url'] = 'pessoa-update'
-        context['delete_url'] = 'pessoa-delete'
-        return context
+    model = Pessoa
+    titulo = 'Lista de Pessoas'
+    model_name = 'Pessoa'
+    create_url = 'pessoa-create'
+    update_url = 'pessoa-update'
+    delete_url = 'pessoa-delete'
     
-class PessoaCreateView(LoginRequiredMixin,CreateView):
+class PessoaCreateView(BaseCreateView):
     model = Pessoa
     fields = ['primeiro_nome', 'sobrenome', 'cpf', 'email']
-    template_name = 'cadastros/formularios.html'
+    titulo = 'Adicionar Pessoa'
     success_url = reverse_lazy('pessoa-list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Adicionar Pessoa'
-        context['model'] = 'Pessoa'
-        return context
-
-class PessoaUpdateView(LoginRequiredMixin,UpdateView):
+class PessoaUpdateView(BaseUpdateView):
     model = Pessoa
     fields = ['primeiro_nome', 'sobrenome', 'cpf', 'email']
-    template_name = 'cadastros/formularios.html'
+    titulo = 'Editar Pessoa'
     success_url = reverse_lazy('pessoa-list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Pessoa'
-        return context
-
-class PessoaDeleteView(LoginRequiredMixin,DeleteView):
+    
+class PessoaDeleteView(BaseDeleteView):
     model = Pessoa
-    template_name = 'cadastros/base_confirm_delete.html'
+    titulo = 'Deletar Pessoa'
     success_url = reverse_lazy('pessoa-list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Deletar Pessoa'
-        return context
     
  #Sensores Listas View   
     
-class RelesListView(LoginRequiredMixin,ListView):
-    model = Reles
+class RelesListView(BaseListView):
     template_name = 'listas/reles.html'
-    context_object_name = 'objects'
+    model = Reles
+    titulo = 'Lista de Reles'
+    model_name = 'Reles'
+    create_url = 'reles-create'
+    update_url = 'reles-update'
+    delete_url = 'reles-delete'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Lista de Reles'
-        context['model'] = 'Reles'
-        context['create_url'] = 'reles-create'
-        context['update_url'] = 'reles-update'
-        context['delete_url'] = 'reles-delete'
-        return context
-
-class RelesCreateView(LoginRequiredMixin,CreateView):
+class RelesCreateView(BaseCreateView):
     model = Reles
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
-    template_name = 'cadastros/formularios.html'
+    titulo = 'Adicionar Reles'
     success_url = reverse_lazy('reles-list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Adicionar Reles'
-        return context
-
-class RelesUpdateView(LoginRequiredMixin,UpdateView):
+class RelesUpdateView(BaseUpdateView):
     model = Reles
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
-    template_name = 'cadastros/formularios.html'
+    titulo = 'Editar Reles'
     success_url = reverse_lazy('reles-list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Reles'
-        return context
-
-class RelesDeleteView(GroupRequiredMixin,DeleteView):
+class RelesDeleteView(BaseDeleteView):
     model = Reles
-    template_name = 'cadastro/base_confirm_delete.html'
-    success_url = reverse_lazy('reles-list')
-    group_required = ["Administrador"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Deletar Reles'
-        return context    
+    titulo = 'Deletar Reles'
+    success_url = reverse_lazy('reles-list')  
     
 # Reles testes
-
-class SensorListView(LoginRequiredMixin,ListView):
-    model = Sensor
+class SensorListView(BaseListView):
     template_name = 'listas/sensor.html'
-    context_object_name = 'objects'
+    model = Sensor
+    titulo = 'Lista de Sensores'
+    model_name = 'Sensor'
+    create_url = 'sensor-create'
+    update_url = 'sensor-update'
+    delete_url = 'sensor-delete'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Lista de Sensores'
-        context['model'] = 'Sensor'
-        context['create_url'] = 'sensor-create'
-        context['update_url'] = 'sensor-update'
-        context['delete_url'] = 'sensor-delete'
-        return context
-
-class SensorCreateView(LoginRequiredMixin,CreateView):
+class SensorCreateView(BaseCreateView):
     model = Sensor
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
-    template_name = 'cadastros/formularios.html'
+    titulo = 'Adicionar Sensor'
     success_url = reverse_lazy('sensor-list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Adicionar Sensor'
-        return context
-
-class SensorUpdateView(LoginRequiredMixin,UpdateView):
+class SensorUpdateView(BaseUpdateView):
     model = Sensor
     fields = ['descricao', 'data_instalacao', 'ultima_manutencao', 'tipo']
-    template_name = 'cadastros/formularios.html'
-    success_url = reverse_lazy('sensor-list')
+    titulo = 'Editar Sensor'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Sensor'
-        return context
-
-class SensorDeleteView(GroupRequiredMixin,DeleteView):
+class SensorDeleteView(BaseDeleteView):
     model = Sensor
-    template_name = 'cadastro/base_confirm_delete.html'
+    titulo = 'Deletar Sensor'
     success_url = reverse_lazy('sensor-list')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Deletar Sensor'
-        return context    
